@@ -328,6 +328,7 @@ namespace LogoReplace
                 }
             }
         }
+        /* 转生图标替换, 暂时弃用
         [HarmonyPatch(typeof(ChatSpecialIconSettings), nameof(ChatSpecialIconSettings.GetPrestigeLevelIconData))]
         static class PrestigeSpritePatch
         {
@@ -383,6 +384,7 @@ namespace LogoReplace
                 return false;
             }
         }
+        */
         public static PrestigeIconsData CreatePrestigeIconsData(Texture2D icon32x, Texture2D icon132x, Texture2D icon512x)
         {
             return new PrestigeIconsData
