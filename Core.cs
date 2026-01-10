@@ -34,15 +34,8 @@ namespace LogoReplace
         public static Texture2D FG2 = LoadFromFile("Ending_part1_Front.png");
         public static Texture2D FG3 = LoadFromFile("Ending_part2_Front.png");
         public static Texture2D FG4 = LoadFromFile("Ending_part3_Front.png");
-        public static Sprite TestFloorSprite = SimpleCreateSprite(TestFloor);
         private void Awake()
         {
-            //string logoFile = Path.Combine(pluginDir, "logo_pve.png");
-            //byte[] bytes = File.ReadAllBytes(logoFile);
-            //var tex = new Texture2D(2, 2);
-            //tex.LoadImage(bytes);
-            //NewLogoTexture = tex;
-            // 2. 安装 Harmony Patch
             var harmony = new Harmony("com.eft.logoreplace");
             harmony.PatchAll();
             UsePVPLogo = base.Config.Bind<bool>(
@@ -194,14 +187,8 @@ namespace LogoReplace
                         bggo.sharedMaterials[3].mainTexture = BG2;
                         foreach (var mat in bggo.sharedMaterials)
                         {
-                            //mat.mainTexture = TestBG;
-                            //mat.SetTexture("_MainTex", BG4);
-                            //mat.SetTexture("_EmissionMap", BG4);
-                            //.SetColor("_EmissionColor", Color.white * 2f);
                             mat.shader = Shader.Find("Standard");
                             mat.color = Color.white;
-                            //mat.EnableKeyword("_MAIN_TEX");
-                            //mat.enabledKeywords
                         }
                         bggotm.localEulerAngles = new Vector3(270f, 225f, 0f);
                         bggotm.localPosition = new Vector3(0f, -4.85f, 0f);
@@ -222,7 +209,6 @@ namespace LogoReplace
                         bloom2.enabled = false;
                         color.enabled = false;
                         camera.GetComponent<PrismEffects>().enabled = false;
-                        //camera.GetComponent("UnityStandardAssets.ImageEffects.Bloom").gameObject.SetActive(false);
                     }
                     var topright = __instance.transform.Find("EnvironmentUISceneWood/WoodsLayout/BranchContainer/Pine_branch_animated/Pine_branch");
                     var topright2 = __instance.transform.Find("EnvironmentUISceneWood/WoodsLayout/BranchContainer/Pine_branch_animated/PineHub/PineBone/PineHub004Bone001Bone001");
@@ -242,212 +228,12 @@ namespace LogoReplace
                     var light = pointLights.GetComponent<Light>();
                     light.intensity = 3f;
                     light.range = 9f;
-                    /*
-                    var pdcopy = __instance.transform.Find("EnvironmentUISceneWood/WoodsLayout/panorama_front");
-                    if (pdcopy == null)
-                    {
-                        pdcopy = Instantiate(panorama, panorama.transform.parent);
-                    }
-                    FG1.filterMode = FilterMode.Trilinear;
-                    FG1.mipMapBias = 0f;
-                    FG1.ignoreMipmapLimit = true;
-                    FG2.filterMode = FilterMode.Trilinear;
-                    FG2.mipMapBias = 0f;
-                    FG2.ignoreMipmapLimit = true;
-                    FG3.filterMode = FilterMode.Trilinear;
-                    FG3.mipMapBias = 0f;
-                    FG3.ignoreMipmapLimit = true;
-                    FG4.filterMode = FilterMode.Trilinear;
-                    FG4.mipMapBias = 0f;
-                    FG4.ignoreMipmapLimit = true;
-                    pdcopy.name = "panorama_front";
-                    var bggocopy = pdcopy.GetComponent<MeshRenderer>();
-                    var bggotmcopy = pdcopy.GetComponent<Transform>();
-                    if (bggocopy != null && bggocopy.materials != null)
-                    {
-                        bggocopy.materials[0].SetTexture("_EmissionMap", FG1);
-                        bggocopy.materials[1].SetTexture("_EmissionMap", FG4);
-                        bggocopy.materials[2].SetTexture("_EmissionMap", FG3);
-                        bggocopy.materials[3].SetTexture("_EmissionMap", FG2);
-                        bggocopy.materials[0].mainTexture = FG1;
-                        bggocopy.materials[1].mainTexture = FG4;
-                        bggocopy.materials[2].mainTexture = FG3;
-                        bggocopy.materials[3].mainTexture = FG2;
-                        foreach (var mat in bggocopy.materials)
-                        {
-                            // 设置 Shader 为标准 Shader
-                            //mat.shader = Shader.Find("Standard");
-
-                            // 设置材质颜色为白色，确保透明部分不受颜色影响
-                            mat.color = Color.white;
-
-                            // 启用透明度
-                            //mat.shader = Shader.Find("Standard");
-                            mat.shader = Shader.Find("Standard");  // 使用 Standard Shader
-
-                            // 设置透明渲染模式
-                            mat.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);  // 设置源混合模式为 SrcAlpha
-                            mat.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);  // 目标混合模式为 OneMinusSrcAlpha
-                            mat.SetInt("_ZWrite", 0);  // 禁用深度写入
-                            mat.SetInt("_Cull", (int)UnityEngine.Rendering.CullMode.Off);  // 关闭背面剔除
-                            mat.SetFloat("_Mode", 3);  // 透明模式（3表示透明）
-                            mat.renderQueue = 3000;  // 设置透明物体的渲染队列（3000是标准透明队列）
-
-                            // 启用透明关键字
-                            mat.EnableKeyword("_ALPHATEST_ON");
-                            mat.EnableKeyword("_ALPHABLEND_ON");
-                            mat.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-                            // 确保材质的纹理正确，且纹理具有 Alpha 通道
-                            // 你可以在此处设置 _MainTex 和 _EmissionMap 等纹理
-                            //mat.mainTexture = yourPNGTexture;  // 设置你的 PNG 纹理
-                            //mat.SetTexture("_EmissionMap", yourPNGTexture);  // 如果需要启用发光贴图
-                        }
-                        //bggotmcopy.localEulerAngles = new Vector3(270f, 225f, 0f);
-                        //bggotmcopy.localPosition = new Vector3(0f, -4.85f, 0f);
-                        bggotmcopy.position = new Vector3(0f, -1004.65f, 0f);
-                        bggotmcopy.localScale = new Vector3(5.85f, 5.35f, 17.4f);
-                        Console.WriteLine("MeshRenderer BG Texture 已替换");
-                    }
-                    */
-                    //Vector3 desiredWorldPosition = new Vector3(1.8308f, -999.299f, 1.564f);
-                    //Vector3 desiredLocalPosition = new Vector3(1.8308f, 0.701f, 1.564f);
-
-                    // 首先设置世界位置
-                    //pointLights.transform.position = desiredWorldPosition;
-
-                    // 然后计算出父物体相对该世界位置的局部位置
-                    //Vector3 parentPosition = pointLights.transform.parent != null ? pointLights.transform.parent.position : Vector3.zero;
-                    //Vector3 localPos = pointLights.transform.InverseTransformPoint(desiredWorldPosition);
-
-                    // 设置局部位置
-                    //pointLights.transform.localPosition = new Vector3(localPos.x, desiredLocalPosition.y, localPos.z);
                 }
                 catch (Exception err)
                 {
                     Debug.LogError(err);
                 }
             }
-        }
-        [HarmonyPatch(typeof(ChatSpecialIconSettings), nameof(ChatSpecialIconSettings.GetPrestigeLevelIconData))]
-        static class PrestigeSpritePatch
-        {
-            static bool Prefix(ChatSpecialIconSettings __instance, int prestigeLevel, ref PrestigeIconsData __result)
-            {
-                PrestigeIconsData result;
-                if (__instance.PrestigeIcons.TryGetValue(prestigeLevel, out result))
-                {
-                    switch (prestigeLevel)
-                    {
-                        case 1:
-                            {
-                                //Sprite.Create
-                                var sprite = CreatePrestigeIconsData(PrestigeSprite.Level1_32x, PrestigeSprite.Level1_132x, PrestigeSprite.Level1_512x);
-                                result.ConformationIcon = sprite.ConformationIcon;
-                                result.BigIcon = sprite.BigIcon;
-                                result.SmallIcon = sprite.SmallIcon;
-                            }
-                            break;
-                        case 2:
-                            {
-                                //Sprite.Create
-                                var sprite = CreatePrestigeIconsData(PrestigeSprite.Level2_32x, PrestigeSprite.Level2_132x, PrestigeSprite.Level2_512x);
-                                result.ConformationIcon = sprite.ConformationIcon;
-                                result.BigIcon = sprite.BigIcon;
-                                result.SmallIcon = sprite.SmallIcon;
-                            }
-                            break;
-                        case 3:
-                            {
-                                //Sprite.Create
-                                var sprite = CreatePrestigeIconsData(PrestigeSprite.Level3_32x, PrestigeSprite.Level3_132x, PrestigeSprite.Level3_512x);
-                                result.ConformationIcon = sprite.ConformationIcon;
-                                result.BigIcon = sprite.BigIcon;
-                                result.SmallIcon = sprite.SmallIcon;
-                            }
-                            break;
-                        case 4:
-                            {
-                                //Sprite.Create
-                                var sprite = CreatePrestigeIconsData(PrestigeSprite.Level4_32x, PrestigeSprite.Level4_132x, PrestigeSprite.Level4_512x);
-                                result.ConformationIcon = sprite.ConformationIcon;
-                                result.BigIcon = sprite.BigIcon;
-                                result.SmallIcon = sprite.SmallIcon;
-                            }
-                            break;
-                    }
-                    __result = result;
-                    return false;
-                }
-                Debug.LogError(string.Format("There is no icon for prestige level {0}", prestigeLevel));
-                __result = null;
-                return false;
-            }
-        }
-        public static PrestigeIconsData CreatePrestigeIconsData(Texture2D icon32x, Texture2D icon132x, Texture2D icon512x)
-        {
-            return new PrestigeIconsData
-            {
-                BigIcon = SimpleCreateSprite(icon132x),
-                SmallIcon = SimpleCreateSprite(icon32x),
-                ConformationIcon = SimpleCreateSprite(icon512x),
-            };
-        }
-        public static PrestigeIconsData CreatePrestigeIconsData2(Texture2D icon32x, Texture2D icon132x, Texture2D icon512x, PrestigeIconsData icondata)
-        {
-
-            return new PrestigeIconsData
-            {
-                BigIcon = Sprite.Create(
-                    icon512x,
-                    icondata.BigIcon.rect,           // 保持原矩形
-                    icondata.BigIcon.pivot,          // 保持原 pivot
-                    icondata.BigIcon.pixelsPerUnit,  // 保持原单位
-                    0,
-                    SpriteMeshType.FullRect,
-                    icondata.BigIcon.border          // 保持原边框
-                ),
-                SmallIcon = Sprite.Create(
-                    icon132x,
-                    icondata.SmallIcon.rect,           // 保持原矩形
-                    icondata.SmallIcon.pivot,          // 保持原 pivot
-                    icondata.SmallIcon.pixelsPerUnit,  // 保持原单位
-                    0,
-                    SpriteMeshType.FullRect,
-                    icondata.SmallIcon.border          // 保持原边框
-                ),
-                ConformationIcon = Sprite.Create(
-                    icon32x,
-                    icondata.ConformationIcon.rect,           // 保持原矩形
-                    icondata.ConformationIcon.pivot,          // 保持原 pivot
-                    icondata.ConformationIcon.pixelsPerUnit,  // 保持原单位
-                    0,
-                    SpriteMeshType.FullRect,
-                    icondata.ConformationIcon.border          // 保持原边框
-                ),
-            };
-        }
-        public static Sprite SimpleCreateSprite(Texture2D tex)
-        {
-            return Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f), tex.width);
-        }
-        public static class PrestigeSprite
-        {
-            // --- 等级 1 ---
-            public static Texture2D Level1_32x = LoadFromFile("prestigeicon/prestige_level_1_32x.png", 32, 32);
-            public static Texture2D Level1_132x = LoadFromFile("prestigeicon/prestige_level_1_132x.png", 132, 132);
-            public static Texture2D Level1_512x = LoadFromFile("prestigeicon/prestige_level_1_512x.png", 512, 512);
-            // --- 等级 2 ---
-            public static Texture2D Level2_32x = LoadFromFile("prestigeicon/prestige_level_2_32x.png", 32, 32);
-            public static Texture2D Level2_132x = LoadFromFile("prestigeicon/prestige_level_2_132x.png", 132, 132);
-            public static Texture2D Level2_512x = LoadFromFile("prestigeicon/prestige_level_2_512x.png", 512, 512);
-            // --- 等级 3 ---
-            public static Texture2D Level3_32x = LoadFromFile("prestigeicon/prestige_level_3_32x.png", 32, 32);
-            public static Texture2D Level3_132x = LoadFromFile("prestigeicon/prestige_level_3_132x.png", 132, 132);
-            public static Texture2D Level3_512x = LoadFromFile("prestigeicon/prestige_level_3_512x.png", 512, 512);
-            // --- 等级 4 ---
-            public static Texture2D Level4_32x = LoadFromFile("prestigeicon/prestige_level_4_32x.png", 32, 32);
-            public static Texture2D Level4_132x = LoadFromFile("prestigeicon/prestige_level_4_132x.png", 132, 132);
-            public static Texture2D Level4_512x = LoadFromFile("prestigeicon/prestige_level_4_512x.png", 512, 512);
         }
         internal static ConfigEntry<bool> UsePVPLogo { get; set; }
         internal static ConfigEntry<bool> ChangeLogo { get; set; }
