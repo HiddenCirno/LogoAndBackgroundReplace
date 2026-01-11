@@ -342,7 +342,8 @@ namespace LogoReplace
                 var disableTopGlow = DisableTopGlow.Value;
                 var usePvPLogo = UsePVPLogo.Value;
                 //缓存实例(这玩意好像没用了....
-                _environmentUIInstance = __instance;
+                //就是没用了
+                //_environmentUIInstance = __instance;
                 try
                 {
                     //PvE处理
@@ -523,7 +524,6 @@ namespace LogoReplace
         internal static ConfigEntry<bool> ChangeLogo { get; set; }
         internal static ConfigEntry<bool> DisableTopGlow { get; set; }
         internal static ConfigEntry<string> BackgroundSelect;
-        public static EnvironmentUI _environmentUIInstance;
         public static GameObject _logoPvP;
         public static GameObject _topGlowPvP;
         public static MeshRenderer _meshRendererPvP;
@@ -547,7 +547,5 @@ namespace LogoReplace
         public static float _pointLightIntensity = 0f;
         public static float _pointLightRange = 0f;
         public static bool bgIsWood = true;
-        public static string logoStyle = "PvE";
-
     }
 }
