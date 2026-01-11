@@ -54,6 +54,11 @@ namespace LogoReplace
         public static Texture2D Story04BG2 = LoadFromFile("Ending_4_part1.png");
         public static Texture2D Story04BG3 = LoadFromFile("Ending_4_part2.png");
         public static Texture2D Story04BG4 = LoadFromFile("Ending_4_part3.png");
+        public static Texture2D MCLogoTexture = LoadFromFile("logo_minecraft.png");
+        public static Texture2D MCBG1 = LoadFromFile("Minecraft_part4.png");
+        public static Texture2D MCBG2 = LoadFromFile("Minecraft_part1.png");
+        public static Texture2D MCBG3 = LoadFromFile("Minecraft_part2.png");
+        public static Texture2D MCBG4 = LoadFromFile("Minecraft_part3.png");
         private void Awake()
         {
             var harmony = new Harmony("com.eft.logoreplace");
@@ -89,7 +94,7 @@ namespace LogoReplace
                 new ConfigDescription(
                     "选择背景样式",
                     new AcceptableValueList<string>(
-                        "森林", "黯淡天际", "人类黄昏", "风暴前沿", "风轻云淡"//, "方块世界"
+                        "森林", "黯淡天际", "人类黄昏", "风暴前沿", "风轻云淡", "方块世界"
                     )
                 )
             );
@@ -185,6 +190,11 @@ namespace LogoReplace
                         SetStory04Background();
                     }
                     break;
+                case "方块世界":
+                    {
+                        SetMCBackground();
+                    }
+                    break;
                 default:
                     {
                         SetWoodBackground();
@@ -244,6 +254,15 @@ namespace LogoReplace
             SetBasicBGData();
             SetLight();
             LogoTexture = Story01LogoTexture;
+        }
+        //MC
+        public static void SetMCBackground()
+        {
+            if (!NullCheck()) return;
+            SetBGTexture(MCBG1, MCBG2, MCBG3, MCBG4);
+            SetBasicBGData();
+            SetLight();
+            LogoTexture = MCLogoTexture;
         }
         //打光不确定需不需要微调, 暂且打包
         public static void SetLight()
