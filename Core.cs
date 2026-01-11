@@ -23,11 +23,11 @@ namespace LogoReplace
         private const string ASSEMBLY_GUID = "com.eft.logoreplace";
 
         // 资源文件名称常量
-        private const string LOGO_FILE_NAME = "logo_pvp.png";
-        private const string BG1_FILE_NAME = "Ending_part4_Merge.png";
-        private const string BG2_FILE_NAME = "Ending_part1_Merge.png";
-        private const string BG3_FILE_NAME = "Ending_part2_Merge.png";
-        private const string BG4_FILE_NAME = "Ending_part3_Merge_New.png";
+        private const string LOGO_FILE_NAME = "logo_ending.png";
+        private const string BG1_FILE_NAME = "Ending_part4.png";
+        private const string BG2_FILE_NAME = "Ending_part1.png";
+        private const string BG3_FILE_NAME = "Ending_part2.png";
+        private const string BG4_FILE_NAME = "Ending_part3.png";
 
         // 游戏对象路径常量
         public const string LOGO_DECAL_PVP_PATH = "EnvironmentUISceneWood/WoodsLayout/logo_decal/decal_plane";
