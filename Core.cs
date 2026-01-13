@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.Video;
 using UnityEngine.Windows;
 namespace LogoReplace
 {
@@ -31,7 +32,7 @@ namespace LogoReplace
         public static Texture2D BGTexture1 = null;
         public static Texture2D BGTexture2 = null;
         public static Texture2D BGTexture3 = null;
-        public static Texture2D BGTexture4 = null;
+        public static Texture BGTexture4 = null;
         public static Texture2D GirlPvELogoTexture = LoadFromFile("logo_pve.png");
         public static Texture2D GirlPvPLogoTexture = LoadFromFile("logo_pvp.png");
         public static Texture2D Story01LogoTexture = LoadFromFile("logo_story_1.png");
@@ -227,6 +228,19 @@ namespace LogoReplace
             SetBasicBGData();
             SetLight();
             LogoTexture = Story04LogoTexture;
+            if (_bg.GetComponent<AnimationBG>() == null)
+            {
+                _bg.AddComponent<AnimationBG>();
+            }
+            //_videoPlayer.source = VideoSource.Url;
+            //_videoPlayer.url = Path.Combine(pluginDir, "test.mp4");
+
+            //_videoPlayer.renderMode = VideoRenderMode.APIOnly;
+
+            //_videoPlayer.isLooping = true;
+            //_videoPlayer.targetTexture = _renderTexture;
+            //_bgMaterial[1].mainTexture = _renderTexture;
+            //SetBGTexture(Story04BG1, Story04BG2, Story04BG3);
         }
         //人类黄昏(堕入黑暗
         public static void SetStory02Background()
@@ -316,6 +330,19 @@ namespace LogoReplace
             _bgMaterial[3].mainTexture = BGTexture2;
             //需要处理MainTex
         }
+        public static void SetBGTexture(Texture2D tex1, Texture2D tex2, Texture2D tex3)
+        {
+            BGTexture1 = tex1;
+            BGTexture2 = tex2;
+            BGTexture3 = tex3;
+            _bgMaterial[0].SetTexture("_EmissionMap", BGTexture1);
+            _bgMaterial[2].SetTexture("_EmissionMap", BGTexture3);
+            _bgMaterial[3].SetTexture("_EmissionMap", BGTexture2);
+            _bgMaterial[0].mainTexture = BGTexture1;
+            _bgMaterial[2].mainTexture = BGTexture3;
+            _bgMaterial[3].mainTexture = BGTexture2;
+            //需要处理MainTex
+        }
         //设置背景颜色
         public static void SetBGColor()
         {
@@ -351,6 +378,67 @@ namespace LogoReplace
             var tex = new Texture2D(width, height, TextureFormat.ARGB32, false);
             tex.LoadImage(bytes);
             return tex;
+        }
+        //尝试一下从流创建VideoPlayer
+        public static VideoPlayer LoadVideoFromFile(string path, int width = 1920, int height = 1080)
+        {
+            string pathes = Path.Combine(pluginDir, path);
+            //这里应该是MonoBehaviour
+            //昨晚没太睡好, 有点注意力涣散
+            //明天再写
+            return null;
+        }
+        public class AnimationBG : MonoBehaviour
+        {
+            //....不太好搞
+            //总之先试试固定硬编码
+            public string filePath = "test.mp4"; // 视频文件路径
+            public MeshRenderer targetRenderer; // 用于显示视频的 MeshRenderer
+
+            private VideoPlayer videoPlayer;
+            private RenderTexture renderTexture;
+            void Start()
+            {
+                // 创建并设置 RenderTexture
+                renderTexture = new RenderTexture(2048, 2048, 16); // 根据视频分辨率设置大小
+                renderTexture.Create();
+
+                string pathes = Path.Combine(pluginDir, filePath);
+
+                targetRenderer = this.gameObject.GetComponent<MeshRenderer>();
+
+                // 获取 VideoPlayer 组件
+                videoPlayer = gameObject.AddComponent<VideoPlayer>();
+
+                // 设置 VideoPlayer 的视频源为本地文件路径
+                videoPlayer.source = VideoSource.Url;
+                videoPlayer.url = pathes;  // 使用本地视频文件路径
+
+                videoPlayer.renderMode = VideoRenderMode.APIOnly;
+
+                // 将视频渲染到 RenderTexture 上
+                videoPlayer.targetTexture = renderTexture;
+
+                // 设置 VideoPlayer 自动循环播放
+                videoPlayer.isLooping = true;
+
+                videoPlayer.Play();
+                Console.WriteLine("LogoReplace: VidepPlay");
+                // 等待 VideoPlayer 准备好后开始播放
+
+                // 将 RenderTexture 设置为 MeshRenderer 的第二个材质（materials[1]）
+                if (targetRenderer != null)
+                {
+                    Console.WriteLine("LogoReplace: SetVideo");
+                    _bgMaterial[1].mainTexture = videoPlayer.targetTexture;
+                    _bgMaterial[1].SetTexture("_EmissionMap", videoPlayer.targetTexture);
+                    //targetRenderer.sharedMaterials[1].SetTexture("_EmissionMap", renderTexture);
+                }
+                else
+                {
+                    Console.WriteLine("LogoReplace: SetVideo Failed");
+                }
+            }
         }
         [HarmonyPatch(typeof(EnvironmentUI), nameof(EnvironmentUI.ShowEnvironment))]
         static class Patch_ShowEnvironment
@@ -445,6 +533,7 @@ namespace LogoReplace
                         Console.WriteLine("BGGO 未找到");
                         return;
                     }
+                    _bg = panorama.gameObject;
                     var bggo = panorama.GetComponent<MeshRenderer>();
                     var bggotm = panorama.GetComponent<Transform>();
                     _bgTransform = bggotm;
@@ -549,6 +638,9 @@ namespace LogoReplace
         public static GameObject _logoPvE;
         public static GameObject _topGlowPvE;
         public static MeshRenderer _meshRendererPvE;
+        public static GameObject _bg;
+        public static VideoPlayer _videoPlayer = new VideoPlayer();
+        public static RenderTexture _renderTexture = new RenderTexture(2048, 2048, 16);
         public static Transform _bgTransform;
         public static Vector3? _bgPosition = null;
         public static Vector3? _bgEulerAngle = null;
