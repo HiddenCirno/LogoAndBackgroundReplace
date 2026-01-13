@@ -88,6 +88,14 @@ namespace LogoReplace
                     "禁用顶部打光"
                 )
             );
+            EnableAnimateBG = base.Config.Bind<bool>(
+                "设置",
+                "启用动态背景",
+                false,
+                new ConfigDescription(
+                    "启用动态背景"
+                )
+            );
             BackgroundSelect = Config.Bind(
                 "设置",
                 "背景样式选择",
@@ -98,7 +106,7 @@ namespace LogoReplace
                         "森林", "黯淡天际", "人类黄昏", "风暴前沿", "风轻云淡", "方块世界"
                     )
                 )
-            );
+            ); 
             //一切就绪, 该做材质了
             //订阅事件处理Logo变化
             UsePVPLogo.SettingChanged += ChangeLogoTypeEvent;
@@ -109,6 +117,8 @@ namespace LogoReplace
             DisableTopGlow.SettingChanged += ChangeLogoStyleEvent;
             BackgroundSelect.SettingChanged += ChangeBackgroundEvent;
             BackgroundSelect.SettingChanged += ChangeLogoEvent;
+            EnableAnimateBG.SettingChanged += ChangeBackgroundEvent;
+            EnableAnimateBG.SettingChanged += ChangeLogoEvent;
         }
         //Logo外观变化事件
         public static void ChangeLogoTypeEvent(object sender, EventArgs e)
@@ -164,6 +174,7 @@ namespace LogoReplace
         {
             var bgSelect = BackgroundSelect.Value;
             bgIsWood = false;
+            _bgCopy.SetActive(false);
             switch (bgSelect)
             {
                 case "森林":
@@ -228,10 +239,8 @@ namespace LogoReplace
             SetBasicBGData();
             SetLight();
             LogoTexture = Story04LogoTexture;
-            if (_bg.GetComponent<AnimationBG>() == null)
-            {
-                _bg.AddComponent<AnimationBG>();
-            }
+            //video = "test.mp4";
+            SetVideo("Ending_4_Video.mp4");
             //_videoPlayer.source = VideoSource.Url;
             //_videoPlayer.url = Path.Combine(pluginDir, "test.mp4");
 
@@ -250,6 +259,7 @@ namespace LogoReplace
             SetBasicBGData();
             SetLight();
             LogoTexture = Story02LogoTexture;
+            SetVideo("Ending_2_Video.mp4");
         }
         //风暴前沿(灯塔
         public static void SetStory03Background()
@@ -259,6 +269,7 @@ namespace LogoReplace
             SetBasicBGData();
             SetLight();
             LogoTexture = Story03LogoTexture;
+            SetVideo("Ending_3_Video.mp4");
         }
         //黯淡天际(幸存
         public static void SetStory01Background()
@@ -268,6 +279,7 @@ namespace LogoReplace
             SetBasicBGData();
             SetLight();
             LogoTexture = Story01LogoTexture;
+            SetVideo("Ending_1_Video.mp4");
         }
         //MC
         public static void SetMCBackground()
@@ -277,6 +289,19 @@ namespace LogoReplace
             SetBasicBGData();
             SetLight();
             LogoTexture = MCLogoTexture;
+        }
+        public static void SetVideo(string source)
+        {
+            SetBGTransform2();
+            video = source;
+            if (_bgCopy.GetComponent<AnimationBG>() == null)
+            {
+                _bgCopy.AddComponent<AnimationBG>();
+            }
+            if (EnableAnimateBG.Value)
+            {
+                _bgCopy.SetActive(!bgIsWood);
+            }
         }
         //打光不确定需不需要微调, 暂且打包
         public static void SetLight()
@@ -304,8 +329,17 @@ namespace LogoReplace
             //果然
             //我讨厌隐式转换
             _bgTransform.localEulerAngles = bgIsWood ? (Vector3)_bgEulerAngle : new Vector3(270f, 225f, 0f);
-            _bgTransform.localPosition = bgIsWood ? (Vector3)_bgPosition : new Vector3(0f, -4.85f, 0f);
-            _bgTransform.localScale = bgIsWood ? (Vector3)_bgScale : new Vector3(5.9f, 5.4f, 18.3f);
+            _bgTransform.localPosition = bgIsWood ? (Vector3)_bgPosition : new Vector3(0f, -4.85f, 0.117f);//old new Vector3(0f, -4.85f, 0f);
+            _bgTransform.localScale = bgIsWood ? (Vector3)_bgScale : new Vector3(5.8f, 5.3f, 18.3f);//old new Vector3(5.9f, 5.4f, 18.3f);
+        }
+        public static void SetBGTransform2()
+        {
+            //我知道了, 这里可能NPE了
+            //果然
+            //我讨厌隐式转换
+            _bgCopy.transform.localEulerAngles = bgIsWood ? (Vector3)_bgEulerAngle : new Vector3(270f, 225f, 0f);
+            _bgCopy.transform.localPosition = bgIsWood ? (Vector3)_bgPosition : new Vector3(0f, -4.85f, -0.23f);//old new Vector3(0f, -4.85f, 0f);
+            _bgCopy.transform.localScale = bgIsWood ? (Vector3)_bgScale : new Vector3(6.1f, 5.6f, 18.3f);//old new Vector3(5.9f, 5.4f, 18.3f);
         }
         //空值检查, 防止默认非森林背景
         public static bool NullCheck()
@@ -392,7 +426,7 @@ namespace LogoReplace
         {
             //....不太好搞
             //总之先试试固定硬编码
-            public string filePath = "test.mp4"; // 视频文件路径
+            public string filePath = video; // 视频文件路径
             public MeshRenderer targetRenderer; // 用于显示视频的 MeshRenderer
 
             private VideoPlayer videoPlayer;
@@ -414,7 +448,7 @@ namespace LogoReplace
                 videoPlayer.source = VideoSource.Url;
                 videoPlayer.url = pathes;  // 使用本地视频文件路径
 
-                videoPlayer.renderMode = VideoRenderMode.APIOnly;
+                //videoPlayer.renderMode = VideoRenderMode.APIOnly;
 
                 // 将视频渲染到 RenderTexture 上
                 videoPlayer.targetTexture = renderTexture;
@@ -437,6 +471,16 @@ namespace LogoReplace
                 else
                 {
                     Console.WriteLine("LogoReplace: SetVideo Failed");
+                }
+            }
+            void Update()
+            {
+                if(filePath!= video)
+                {
+                    filePath = video;
+                    videoPlayer.url = Path.Combine(pluginDir, filePath);
+                    videoPlayer.Stop();
+                    videoPlayer.Play();
                 }
             }
         }
@@ -610,6 +654,17 @@ namespace LogoReplace
                         _pointLightIntensity = light.intensity;
                         _pointLightRange = light.range;
                     }
+
+                    var bgcopy = __instance.transform.Find("EnvironmentUISceneWood/WoodsLayout/panorama_front");
+                    if (bgcopy == null)
+                    {
+                        bgcopy = Instantiate(panorama, panorama.transform.parent);
+                    }
+                    bgcopy.name = "panorama_front";
+                    _bgCopy = bgcopy.gameObject;
+                    var bggocopy = bgcopy.GetComponent<MeshRenderer>();
+                    var bggotmcopy = bgcopy.GetComponent<Transform>();
+
                 }
                 catch (Exception err)
                 {
@@ -631,6 +686,7 @@ namespace LogoReplace
         internal static ConfigEntry<bool> UsePVPLogo { get; set; }
         internal static ConfigEntry<bool> ChangeLogo { get; set; }
         internal static ConfigEntry<bool> DisableTopGlow { get; set; }
+        internal static ConfigEntry<bool> EnableAnimateBG { get; set; }
         internal static ConfigEntry<string> BackgroundSelect;
         public static GameObject _logoPvP;
         public static GameObject _topGlowPvP;
@@ -639,6 +695,7 @@ namespace LogoReplace
         public static GameObject _topGlowPvE;
         public static MeshRenderer _meshRendererPvE;
         public static GameObject _bg;
+        public static GameObject _bgCopy;
         public static VideoPlayer _videoPlayer = new VideoPlayer();
         public static RenderTexture _renderTexture = new RenderTexture(2048, 2048, 16);
         public static Transform _bgTransform;
@@ -658,5 +715,6 @@ namespace LogoReplace
         public static float _pointLightIntensity = 0f;
         public static float _pointLightRange = 0f;
         public static bool bgIsWood = true;
+        public static string video = "test.mp4";
     }
 }
